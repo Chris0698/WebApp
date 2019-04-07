@@ -1,0 +1,89 @@
+#film > span {
+    cursor: pointer;
+    width: 16%;
+}
+
+#filmDisplayTitles > span {
+    width: 16%;
+}
+
+#filmDisplayTitles {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#film, #filmDisplayTitles {
+    display: flex;
+    flex-direction: row;
+}
+
+.selected, .selected a {
+    color: red !important;
+}
+
+#login-form {
+    width: 25%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: white;
+    border-left: 1px solid black;
+}
+
+#login-form-inner {
+    padding-left: 10px;
+}
+
+#fillFilmAside {
+    width: 25%;
+    height: 100%;
+    position: fixed;
+    right: 0;
+    top: 0;
+    background: white;
+    border-left: 1px solid black;
+    overflow-y: auto;
+}
+
+p, label, span {
+    font-family: arial, sans-serif, vendona;
+}
+
+p {
+    font-size:16px;
+    color: #000000;
+    /*Padding to cushion the paragraphs from the border lines. */
+    padding-left:4px;
+}
+
+h1, h2, h3 {
+    font-family: arial, sans-serif, vendona;
+    padding-left:4px;
+}
+
+#search-and-filter {
+    display: block;
+}
+
+.logInFragment {
+    width: 20%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: thin solid black;
+}
+
+#logInError {
+    color: red;
+}
+
+#notes-form {
+    border: 1px solid black;
+    width: 74.5%;
+    position: fixed;
+    bottom: 0;
+    background: white;
+    height: 150px;
+    left: 0;
+}
