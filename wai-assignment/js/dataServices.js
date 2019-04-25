@@ -3,171 +3,153 @@
 
     angular.module("FilmApp").
         service("dataService",
-        [
-            "$q",
-            "$http",
-            function ($q, $http) {
-                var urlBase = "/wai-assignment/server/index.php";
+            [
+                "$q",
+                "$http",
+                function ($q, $http) {
+                    //url to index.php where the data will come from
+                    var urlBase = "/wai-assignment/server/index.php";
 
-                this.getFilms = function () {
-                    var defer = $q.defer();
-                    var data = {
-                        action : "list",
-                        subject : "film"
+                    this.getFilms = function () {
+                        var defer = $q.defer();
+                        var data = {
+                            action : "list",
+                            subject : "films"
+                        };
+
+                        $http.get(urlBase, {params : data, cache : true}).
+                            success(function (response) {
+                                defer.resolve({
+                                    data : response.results,
+                                    rowCount : response.rowCount,
+                                });
+                            }).error(function (err) {
+                                defer.reject(err);
+                            });
+
+                        return defer.promise;
                     };
 
-                    $http.get(urlBase, {params : data, cache : true}).
-                        success(function (response) {
+                    this.getSelectOptions = function () {
+                        var defer = $q.defer();
+                        var data = {
+                            action : "list",
+                            subject : "categories"
+                        };
 
+                        $http.get(urlBase, {params : data, cache : true}).
+                        success(function (response) {
                             defer.resolve({
-                                dataCount : response.rowCount,
                                 data : response.results
                             })
                         }).error(function (error) {
                             defer.reject(error)
                         });
 
-                    return defer.promise;
-                };
-
-                this.getSearchFilms = function (term) {
-                    var defer = $q.defer();
-                    var data = {
-                        action: "list",
-                        subject : "film",
-                        term : term
+                        return defer.promise;
                     };
 
-                    $http.get(urlBase, {params : data, cache : true}).
-                    success(function (response) {
-                        defer.resolve({
-                            data : response.results,
-                            dataCount : response.rowCount
-                        })
-                    }).error(function (error) {
-                        defer.reject(error)
-                    });
+                    this.getSearchFilms = function (term) {
+                        var defer = $q.defer();
+                        var data = {
+                            action: "list",
+                            subject : "films",
+                            term : term
+                        };
 
-                    return defer.promise;
-                };
+                        $http.get(urlBase, {params : data, cache : true}).
+                        success(function (response) {
+                            defer.resolve({
+                                data : response.results,
+                                rowCount : response.rowCount
+                            })
+                        }).error(function (error) {
+                            defer.reject(error)
+                        });
 
-                this.checkLogIn = function () {
-                    var defer = $q.defer();
-                    var data = {
-                        action : "checkLogIn"
+                        return defer.promise;
                     };
 
-                    $http.get(urlBase, {params : data}).
-                    success(function (response) {
-                        defer.resolve({
-                            data: response.results
-                        })
-                    }).error(function (error) {
-                        defer.reject(error)
-                    });
+                    this.logIn = function (credentials) {
+                        var defer = $q.defer();
+                        var data = {
+                            action : "logIn",
+                            subject : "user",
+                            data : credentials
+                        };
 
-                    return defer.promise;
-                };
+                        $http.post(urlBase, data).
+                            success(function (response) {
+                                defer.resolve({
+                                    data : response.results
+                                });
+                            }).error(function (error) {
+                                defer.reject(error)
+                            });
 
-
-                this.getSelectOptions = function () {
-                    var defer = $q.defer();
-                    var data = {
-                        action : "list",
-                        subject : "categories"
+                        return defer.promise;
                     };
 
-                    $http.get(urlBase, {params : data, cache : true}).
-                    success(function (response) {
-                        defer.resolve({
-                            data : response.results
-                        })
-                    }).error(function (error) {
-                        defer.reject(error)
-                    });
+                    this.logOut = function () {
+                        var defer = $q.defer();
+                        var data = {
+                            action : "logOut",
+                            subject : "user"
+                        };
 
-                    return defer.promise;
-                };
-
-                this.filterFilmByCategory = function (category) {
-                    var defer = $q.defer();
-                    var data = {
-                        action : "list",
-                        subject : "film",
-                        cat : category
-                    };
-
-                    $http.get(urlBase, {params : data, cache : true}).
-                    success(function (response) {
-                        defer.resolve({
-                            data : response.results,
-                            dataCount : response.rowCount
-                        })
-                    }).error(function (error) {
-                        defer.reject(error)
-                    });
-
-                    return defer.promise;
-                };
-
-
-
-                this.logIn = function (credentials) {
-                    var defer = $q.defer();
-                    var data = {
-                        action : "logIn",
-                        subject : "user",
-                        data : credentials
-                    };
-
-                    $http.post(urlBase, data).
-                    success(function (response) {
-                        defer.resolve({
-                            data : response.result
-                        })
-                    }).error(function (error) {
-                        defer.reject(error)
-                    });
-
-                    return defer.promise;
-                };
-
-                this.logOut = function () {
-                    var defer = $q.defer();
-                    var data = {
-                        action : "logOut",
-                        subject : "user"
-                    };
-
-                    $http.post(urlBase, data).
+                        $http.post(urlBase, data).
                         success(function (response) {
                             defer.resolve(response)
                         }).error(function (error) {
                             defer.reject(error)
                         });
 
-                    return defer.promise;
-                };
-
-                this.saveNote = function (note) {
-                    console.log(note);
-                    var defer = $q.defer();
-                    var data = {
-                        action : "update",
-                        subject : "note",
-                        data : angular.toJson(note)
+                        return defer.promise;
                     };
 
-                    $http.post(urlBase, data).
+
+                    this.filterFilmByCategory = function (category) {
+                        var defer = $q.defer();
+                        var data = {
+                            action : "list",
+                            subject : "films",
+                            cat : category
+                        };
+
+                        $http.get(urlBase, {params : data, cache : true}).
                         success(function (response) {
                             defer.resolve({
-                                data : response.result
-                            })
+                                data : response.results,
+                                rowCount : response.rowCount
+                            });
                         }).error(function (error) {
                             defer.reject(error)
                         });
-                    return defer.promise;
-                };
-            }
-        ])
+
+                        return defer.promise;
+                    };
+
+
+                    this.getNote = function (ID) {
+                        var defer = $q.defer();
+                        var data = {
+                            action : "list",
+                            subject : "notes",
+                            film_id : ID
+                        };
+
+                        $http.get(urlBase, {params : data, cache : true}).
+                        success(function (response) {
+                            defer.resolve({
+                                data : response.results
+                            });
+                        }).error(function (error) {
+                            defer.reject(error)
+                        });
+
+                        return defer.promise;
+                    };
+                }
+            ]
+        )
 }());

@@ -9,19 +9,17 @@
     <main>
         <div id="page">
             <h1>Epic Fans Films</h1>
-            <article data-ng-controller="filmController" data-ng-include="'js/partials/loginHeader.php'"></article>
             <p>Welcome to Epic fans Films. We got all the films that you do not want. </p>
             <p>Select a film to view full details about it.</p>
             <nav>
                 <ul>
-                    <!--<li><a href="#/">View All Films</a></li>-->
                     <li><a target="_blank" href="testing.php">Testing</a></li>
                 </ul>
             </nav>
 
             <noscript>This website requires Javascript to be enabled. </noscript>
 
-            <article data-ng-controller="filmController" data-ng-include="'js/partials/film.html'"></article>
+            <article data-ng-controller="filmController" data-ng-include="'js/partials/film.php'"></article>
             <article data-ng-view></article>
         </div>
     </main>

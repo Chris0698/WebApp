@@ -78,12 +78,26 @@ h1, h2, h3 {
     color: red;
 }
 
-#notes-form {
+#notesSection {
     border: 1px solid black;
     width: 74.5%;
+    padding: 0;
     position: fixed;
     bottom: 0;
     background: white;
     height: 150px;
     left: 0;
+}
+
+#sectionInner {
+    display: flex;
+    flex-direction: row;
+}
+
+#noteContents {
+    width: 80%;
+}
+
+#noteButtons {
+    width: 20%;
 }

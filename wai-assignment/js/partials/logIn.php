@@ -6,8 +6,8 @@ $session = Session::getInstance();
 //Cheap hack so the user doesn't see the log in form if they enter the logIn into the URL when they are logged in
 if(!$session->getProperty("username"))
 {
-    echo '
-<section id="login-form">
+    $body = <<< BODY
+<section>
     <div id="login-form-inner">
         <h2>Log In</h2>
         <p>Log into the app to make changes.</p>
@@ -25,5 +25,8 @@ if(!$session->getProperty("username"))
             <button data-ng-click="closeLogIn()">Close</button>
         </form>
     </div>
-</section>';
+</section>
+BODY;
+
+    echo $body;
 }

@@ -7,15 +7,15 @@
 <body>
     <main>
         <div>Show ALl films:
-            <a href="http://localhost/wai-assignment/server/index.php?action=list&subject=film">Show Films</a>
+            <a href="http://localhost/wai-assignment/server/index.php?action=list&subject=films">Show Films</a>
         </div>
 
         <div>Show all films where the term "air" is entered into search:
-            <a href="http://localhost/wai-assignment/server/index.php?action=list&subject=film&term=air">Show Search Results</a>
+            <a href="http://localhost/wai-assignment/server/index.php?action=list&subject=films&term=air">Show Search Results</a>
         </div>
 
         <div>List films with the Cat ID of 4:
-            <a href="http://localhost/wai-assignment/server/index.php?action=list&subject=film&cat=4">List films by Category with ID 4</a>
+            <a href="http://localhost/wai-assignment/server/index.php?action=list&subject=films&cat=4">List films by Category with ID 4</a>
         </div>
 
         <div>List actors of a film (where film id equals 4):
