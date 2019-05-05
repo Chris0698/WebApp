@@ -39,7 +39,7 @@ switch ($route)
             $sql = "SELECT DISTINCT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
                            nfc_film.rating, nfc_film.last_update, nfc_category.name, nfc_film.rental_duration,
                            nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features, 
-                           nfc_language.name, nfc_note.comment
+                           nfc_language.name
                     FROM nfc_film
                     INNER JOIN nfc_film_category
                     ON nfc_film.film_id = nfc_film_category.film_id
@@ -47,11 +47,9 @@ switch ($route)
                     ON nfc_category.category_id = nfc_film_category.category_id
                     INNER JOIN nfc_language
                     ON nfc_language.language_id = nfc_film.language_id
-                    LEFT JOIN nfc_note
-                    ON nfc_note.film_id = nfc_film.film_id
                     ORDER BY title";
             $resultSet = new JSONRecordSet();
-            $resultSet = $resultSet->getActorsAndALlFilmsRecordSet($sql);
+            $resultSet = $resultSet->getRecordSet($sql);
             echo $resultSet;
         }
         elseif(empty($filmID) && !empty($term) && empty($catID))
@@ -60,7 +58,7 @@ switch ($route)
             $sql = "SELECT DISTINCT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
                            nfc_film.rating, nfc_film.last_update, nfc_category.name, nfc_film.rental_duration,
                            nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features, 
-                           nfc_language.name, nfc_note.comment
+                           nfc_language.name
                     FROM nfc_film
                     INNER JOIN nfc_film_category
                     ON nfc_film.film_id = nfc_film_category.film_id
@@ -68,12 +66,10 @@ switch ($route)
                     ON nfc_category.category_id = nfc_film_category.category_id
                     INNER JOIN nfc_language
                     ON nfc_language.language_id = nfc_film.language_id
-                    LEFT JOIN nfc_note
-                    ON nfc_note.film_id = nfc_film.film_id
                     WHERE title LIKE :term
                     ORDER BY title";
             $resultSet = new JSONRecordSet();
-            $resultSet = $resultSet->getActorsAndALlFilmsRecordSet($sql, "", array(":term" => "%{$term}%"));
+            $resultSet = $resultSet->getRecordSet($sql, "", array(":term" => "%{$term}%"));
             echo $resultSet;
         }
         else if(!empty($catID) && empty($filmID) && empty($term))
@@ -84,7 +80,7 @@ switch ($route)
                 $filmSQL = "SELECT DISTINCT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
                                nfc_film.rating, nfc_film.last_update, nfc_category.name, nfc_film.rental_duration,
                                nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features, 
-                               nfc_language.name, nfc_note.comment
+                               nfc_language.name
                             FROM nfc_film
                             INNER JOIN nfc_film_category
                             ON nfc_film.film_id = nfc_film_category.film_id
@@ -92,12 +88,10 @@ switch ($route)
                             ON nfc_category.category_id = nfc_film_category.category_id
                             INNER JOIN nfc_language
                             ON nfc_language.language_id = nfc_film.language_id
-                            LEFT JOIN nfc_note
-                            ON nfc_note.film_id = nfc_film.film_id
                             WHERE nfc_category.category_id = :cat
                             ORDER BY title";
                 $resultSet = new JSONRecordSet();
-                $data = $resultSet->getActorsAndALlFilmsRecordSet($filmSQL, "", array(":cat" => $catID));
+                $data = $resultSet->getRecordSet($filmSQL, "", array(":cat" => $catID));
                 echo $data;
             }
             else
@@ -106,7 +100,7 @@ switch ($route)
                 $sql = "SELECT DISTINCT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
                                nfc_film.rating, nfc_film.last_update, nfc_category.name, nfc_film.rental_duration,
                                nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features, 
-                               nfc_language.name, nfc_note.comment
+                               nfc_language.name
                         FROM nfc_film
                         INNER JOIN nfc_film_category
                         ON nfc_film.film_id = nfc_film_category.film_id
@@ -114,12 +108,10 @@ switch ($route)
                         ON nfc_category.category_id = nfc_film_category.category_id
                         INNER JOIN nfc_language
                         ON nfc_language.language_id = nfc_film.language_id
-                        LEFT JOIN nfc_note
-                        ON nfc_note.film_id = nfc_film.film_id
                         ORDER BY title";
 
                 $resultSet = new JSONRecordSet();
-                $data = $resultSet->getActorsAndALlFilmsRecordSet($sql);
+                $data = $resultSet->getRecordSet($sql);
                 echo $data;
             }
         }
@@ -156,9 +148,9 @@ switch ($route)
 
                     if(!empty($user))
                     {
-                        $userPassword = md5($userPassword);
+//                        $userPassword = md5($userPassword);
 
-                        if (/*password_verify($userPassword, $user->password)*/  $userPassword == $user->password)
+                        if (password_verify($userPassword, $user->password))
                         {
                             $session->setProperty("email", $user->email);
                             $session->setProperty("username", $user->username);
@@ -202,11 +194,10 @@ switch ($route)
                 FROM nfc_actor 
                 INNER JOIN nfc_film_actor
                 ON nfc_film_actor.actor_id = nfc_actor.actor_id
-                WHERE nfc_film_actor.film_id = $filmID";
+                WHERE nfc_film_actor.film_id = :film_id";
 
         $resultSet = new JSONRecordSet();
-        //$data = $resultSet->getRecordSet($sql, "", array(":film_id" => $filmID));
-        $data = $resultSet->getRecordSet($sql);
+        $data = $resultSet->getRecordSet($sql, "", array(":film_id" => $filmID));
         echo $data;
         break;
     case "listNotes":
@@ -214,9 +205,9 @@ switch ($route)
         {
             $sql = "SELECT comment, user, nfc_note.film_id, lastupdated
                     FROM nfc_note
-                    WHERE nfc_note.film_id = $filmID";
+                    WHERE nfc_note.film_id = :film_id";
             $resultSet = new JSONRecordSet();
-            $resultSet = $resultSet->getRecordSet($sql);
+            $resultSet = $resultSet->getRecordSet($sql, "", array(":film_id" => $filmID));
             echo $resultSet;
         }
         else

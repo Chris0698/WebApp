@@ -1,0 +1,22 @@
+<div id="fillFilmAside">
+    <h2>{{selectedFilm.title}}</h2>
+    <p>{{selectedFilm.description}}</p>
+    <p>Language: {{selectedFilm.name}}</p>
+    <p>Category: {{selectedFilm.category}}</p>
+    <p>Release Year: {{selectedFilm.release_year}}</p>
+    <p>Rental Duration: {{selectedFilm.rental_duration}} days</p>
+    <p>Rental Rate: £{{selectedFilm.rental_rate}} per hour</p>
+    <p>Film Length: {{selectedFilm.length}} minutes</p>
+    <p>Age rating: {{selectedFilm.rating}}</p>
+    <p>Replacement cost: £{{selectedFilm.replacement_cost}}</p>
+    <p>Special Features: {{selectedFilm.special_features}}</p>
+
+    <h3>Starring</h3>
+    <div data-ng-repeat="actor in actors">
+        <p>{{actor.first_name}} {{actor.last_name}}</p>
+    </div>
+
+    <p>Last Updated: {{selectedFilm.last_update}}</p>
+
+    <button data-ng-click="closeFilmPane()">Close</button>
+</div>

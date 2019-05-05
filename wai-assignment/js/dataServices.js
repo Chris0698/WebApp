@@ -30,6 +30,26 @@
                         return defer.promise;
                     };
 
+                    this.getActors = function (filmID) {
+                        var defer = $q.defer();
+                        var data = {
+                            action: "list",
+                            subject: "actors",
+                            film_id: filmID
+                        };
+
+                        $http.get(urlBase, {params : data, cache : true}).
+                            success(function (response) {
+                                defer.resolve({
+                                   data : response.results
+                                });
+                            }).error(function (err) {
+                                defer.reject(err)
+                            });
+
+                        return defer.promise;
+                    };
+
                     this.getSelectOptions = function () {
                         var defer = $q.defer();
                         var data = {

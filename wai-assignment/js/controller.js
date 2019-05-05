@@ -57,6 +57,15 @@
                         $scope.filmDetailsVisible = true;
                         $scope.selectedFilm = film;
 
+                        dataService.getActors(film.film_id).then(
+                            function (response) {
+                                $scope.actors = response.data;
+                            },
+                            function (err) {
+                                console.log("Error getting Actors: " + err);
+                            }
+                        );
+
                         dataService.getNote(film.film_id).then(
                             function (response) {
                                 console.log(response.data);
