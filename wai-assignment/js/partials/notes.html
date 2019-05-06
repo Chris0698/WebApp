@@ -1,31 +1,24 @@
-<!--<section id="notes-form">-->
-    <!--<h3>Note</h3>-->
-    <!--<form>-->
-        <!--<label>Note-->
-            <!--<textarea data-ng-model="note.comment"></textarea>-->
-        <!--</label>-->
-        <!--<button data-ng-click="saveNote(selectedFilm.film_id)">Save</button>-->
-        <!--<button data-ng-click="closeNoteEditor()">Close</button>-->
-    <!--</form>-->
-<!--</section>-->
-
+<h3>Note Editor</h3>
 <div>
-    <h3>Note</h3>
-    <div id="sectionInner">
-        <div id="noteContents">
-            <form>
-                <input type="text" value="{{note.film_id}}" readonly/>
+    <div>
+        <form>
+            <fieldset>
+                <legend>Note</legend>
+                <input type="text" data-ng-model="note.film_id" readonly hidden/>
                 <label>Note:
-                    <textarea>{{note.comment}}</textarea>
+                    <textarea id="note-textarea" data-ng-model="note.comment"></textarea>
                 </label>
-                <p>Last edit by: {{note.user}}</p>
-                <p>Last Updated: {{note.lastupdated}}</p>
-            </form>
-        </div>
 
-        <div id="noteButtons">
-            <button data-ng-click="saveNote(selectedFilm.film_id)">Save</button>
-            <button data-ng-click="closeNoteEditor()">Close</button>
-        </div>
+                <div id="note-bottom-row">
+                    <div id="noteButtons">
+                        <button data-ng-click="updateNote()">Save</button>
+                        <button data-ng-click="closeNoteEditor()">Close</button>
+                    </div>
+                    <div>
+                        <p>Last edit by: {{note.user}} at {{note.lastupdated}}.</p>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
     </div>
 </div>

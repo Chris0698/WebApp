@@ -1,19 +1,16 @@
+
 <aside>
-    <!--References and div for full film pane, defaults to hidden-->
-    <div data-ng-include="'js/partials/fullFilm.html'"
-        data-ng-show="filmDetailsVisible"
-        id="fillFilmAside">
+    <div data-ng-include="'js/partials/fullFilmPane.html'"
+         data-ng-show="filmDetailsVisible"
+         id="noteEditor">
     </div>
 </aside>
 
-<!--for fill notes is user logged in-->
-<div>
-    <div data-ng-include="'js/partials/notes.html'"
-         data-ng-show="filmNoteVisible"
-         id="notesSection">
-
+<aside>
+    <div data-ng-include="'js/partials/logIn.php'"
+          id="login-form">
     </div>
-</div>
+</aside>
 
 <section>
     <form id="search-and-filter">
@@ -26,7 +23,8 @@
 
         <label>
             Select Category:
-            <select data-ng-model="selectedCat" data-ng-change="filterFilmsByCat(selectedCat)">
+            <select data-ng-model="selectedCat"
+                    data-ng-change="filterFilmsByCat(selectedCat)">
                 <option value="0" selected>List All</option>
                 <option data-ng-repeat="option in options"
                         value="{{option.category_id}}">
@@ -37,6 +35,14 @@
     </form>
 
     <p>Number of films: {{filmTotal}}</p>
+    <!--for fill notes is user logged in-->
+    <section>
+        <div data-ng-include="'js/partials/notes.html'"
+             data-ng-show="filmNoteVisible"
+             id="note-editor">
+        </div>
+    </section>
+
     <div id="filmDisplayTitles">
         <span>Title</span>
         <span>Description</span>
@@ -47,7 +53,7 @@
     </div>
     <div id="film"
          data-ng-repeat="film in films"
-         data-ng-click="selectFilm(film)"
+         data-ng-click="selectFilm($event, film)"
          data-ng-class="{'selected':selectedFilm.film_id === film.film_id}">
 
         <span>{{film.title}}</span>

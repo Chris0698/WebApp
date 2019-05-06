@@ -169,6 +169,28 @@
 
                         return defer.promise;
                     };
+
+                    this.updateNote = function (note) {
+                        console.log(note);
+
+                        var defer = $q.defer();
+                        var data = {
+                            action: "update",
+                            subject: "note",
+                            data: angular.toJson(note)
+                        };
+                        console.log(data);
+                        
+                        $http.post(urlBase, data).
+                            success(function (response) {
+                                defer.resolve(response);
+                            }).
+                            error(function (err) {
+                                defer.reject(err);
+                            });
+
+                        return defer.promise;
+                    };
                 }
             ]
         )

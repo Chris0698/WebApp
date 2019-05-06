@@ -148,8 +148,6 @@ switch ($route)
 
                     if(!empty($user))
                     {
-//                        $userPassword = md5($userPassword);
-
                         if (password_verify($userPassword, $user->password))
                         {
                             $session->setProperty("email", $user->email);
@@ -217,5 +215,49 @@ switch ($route)
         break;
     default:
         echo '{"results" : [{"data": "default no action taken"}]}';
+        break;
+
+    case "updateNote":
+        //check the user is still signed in
+        if($session->getProperty("email") && $session->getProperty("username"))
+        {
+            if(!empty($data))
+            {
+                var_dump($data);
+                $note = json_decode($data);
+
+                $username = $session->getProperty("email");
+                $date = date('Y-m-d H:i:s');
+
+                //check that the note is in the database table first
+                $sql = "SELECT film_id FROM nfc_note WHERE film_id = :filmID";
+                $resultSet = new RecordSet();
+                $resultSet = $resultSet->getRecordSet($sql, "", array("filmID" => $note->film_id));
+                if($resultSet !== false)
+                {
+                    //record exists
+                    $sql = "UPDATE nfc_note SET user = :user, film_id = :filmID, comment = :comment, lastupdated = :date";
+                }
+                else
+                {
+                    //record does not exist
+                    $sql = "INSERT into nfc_note VALUES (:user, :filmID, :comment, :date)";
+                }
+
+                $resultSet = new JSONRecordSet();
+                $resultSet = $resultSet->getRecordSet($sql, "", array
+                                                                            (
+                                                                                "user" => $username,
+                                                                                "filmID" => $note->film_id,
+                                                                                ":comment" => $note->comment,
+                                                                                ":date" => $date
+                                                                            )
+                );
+
+                echo '{"results": "success"}';
+            }
+
+            echo '{"results": "No data"}';
+        }
         break;
 }

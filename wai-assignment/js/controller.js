@@ -17,9 +17,6 @@
                                 console.log("Error getting films: " + err);
                                 alert("Error getting films: " + err);
                             },
-                            function (notify) {
-                                console.log(notify);
-                            }
                         );
                     };
 
@@ -31,9 +28,6 @@
                             function (err) {
                                 console.log("Error: " + err);
                             },
-                            function (notify) {
-                                console.log(notify);
-                            }
                         )
                     };
 
@@ -52,10 +46,18 @@
                         )
                     };
 
-                    $scope.selectFilm = function(film) {
+                    $scope.selectFilm = function($event, film) {
                         console.log(film);
                         $scope.filmDetailsVisible = true;
                         $scope.selectedFilm = film;
+                        $scope.note = {};
+
+                        var element = $event.currentTarget;
+                        var padding = 22;
+                        var yPos = (element.offsetTop + element.clientTop + padding) - (element.scrollTop + element.clientTop);
+                        var noteEditorElement = document.getElementById("noteEditor");
+
+                        noteEditorElement.style.top = yPos + "px";
 
                         dataService.getActors(film.film_id).then(
                             function (response) {
@@ -70,8 +72,9 @@
                             function (response) {
                                 console.log(response.data);
                                 if(response.data !== "NotLoggedIn") {
-                                    $scope.filmNoteVisible = true;
                                     $scope.note = response.data;
+                                    $scope.note.film_id = film.film_id;
+                                    $scope.filmNoteVisible = true;
                                     console.log($scope.note);
                                 }
                             },
@@ -150,8 +153,16 @@
                         $scope.filmNoteVisible = false;
                     };
 
-                    $scope.saveNote = function (ID) {
-                        console.log(ID);
+                    $scope.updateNote = function () {
+                        console.log($scope.note);
+                        dataService.updateNote($scope.note).then(
+                            function (response) {
+                                console.log(response.data);
+                            },
+                            function (err) {
+                                console.log("error saving note: " + err);
+                            }
+                        );
                     };
 
                     getFilms();

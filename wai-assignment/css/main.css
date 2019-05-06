@@ -22,17 +22,22 @@
 }
 
 #login-form {
-    width: 25%;
-    height: 100%;
-    position: fixed;
+    width: 20%;
+    height: 30%;
+    position: absolute;
     top: 0;
     right: 0;
     background: white;
     border-left: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 #login-form-inner {
     padding-left: 10px;
+}
+
+#login-buttons {
+    padding: 5px;
 }
 
 #fillFilmAside {
@@ -44,6 +49,7 @@
     background: white;
     border-left: 1px solid black;
     overflow-y: auto;
+    z-index: 1;
 }
 
 p, label, span {
@@ -78,26 +84,30 @@ h1, h2, h3 {
     color: red;
 }
 
-#notesSection {
+#note-editor {
     border: 1px solid black;
-    width: 74.5%;
-    padding: 0;
-    position: fixed;
-    bottom: 0;
+    position: absolute;
+    width: 50%;
+    height: 210px;
     background: white;
-    height: 150px;
-    left: 0;
+    box-shadow: 1px 1px black;
 }
 
-#sectionInner {
+#note-bottom-row {
     display: flex;
     flex-direction: row;
 }
 
-#noteContents {
+#note-bottom-row > div {
+    width: 50%;
+}
+
+#note-textarea {
     width: 80%;
+    height: 50px;
+    resize: none;
 }
 
 #noteButtons {
-    width: 20%;
+    padding-top: 12px;
 }
