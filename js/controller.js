@@ -14,8 +14,7 @@
                                 $scope.filmTotal = response.rowCount;
                             },
                             function (err) {
-                                console.log("Error getting films: " + err);
-                                alert("Error getting films: " + err);
+                                console.log(err);
                             },
                         );
                     };
@@ -26,7 +25,7 @@
                                 $scope.options = response.data;
                             },
                             function (err) {
-                                console.log("Error: " + err);
+                                console.log(err);
                             },
                         )
                     };
@@ -38,10 +37,7 @@
                                 $scope.films = response.data;
                             },
                             function (err) {
-                                console.log("Error: " + err);
-                            },
-                            function (notify) {
-                                console.log(notify);
+                                console.log(err);
                             }
                         )
                     };
@@ -53,9 +49,9 @@
                         $scope.note = {};
 
                         var element = $event.currentTarget;
-                        var padding = 22;
+                        var padding = 120;
                         var yPos = (element.offsetTop + element.clientTop + padding) - (element.scrollTop + element.clientTop);
-                        var noteEditorElement = document.getElementById("noteEditor");
+                        var noteEditorElement = document.getElementById("note-editor");
 
                         noteEditorElement.style.top = yPos + "px";
 
@@ -71,19 +67,15 @@
                         dataService.getNote(film.film_id).then(
                             function (response) {
                                 console.log(response.data);
+                                $scope.note.film_id = film.film_id;
+                                console.log($scope.note.film_id);
                                 if(response.data !== "NotLoggedIn") {
                                     $scope.note = response.data;
-                                    $scope.note.film_id = film.film_id;
                                     $scope.filmNoteVisible = true;
-                                    console.log($scope.note);
                                 }
                             },
                             function (err) {
-                                console.log("Error: " + err);
-                                alert("Error getting note: " + err);
-                            },
-                            function (notify) {
-                                console.log(notify);
+                                console.log(err);
                             }
                         );
                     };
@@ -103,20 +95,19 @@
                     };
 
                     $scope.logIn = function(credentials) {
-                        console.log("Log in called.");
                         dataService.logIn(credentials).then(
                             function (response) {
-                                console.log(response.data);
+                                console.log(response);
+
                                 if(response.data === "success") {
                                     location.reload();
                                 }
 
-                                $scope.logInMessage = response.data;
+                                $scope.logInMessage = response.results.data;
                             },
                             function (err) {
                                 console.log(err);
-                                alert("Error logging in: " + err);
-                                $scope.logInMessage = err.data;
+                                $scope.logInMessage = err.results.data;
                             }
                         );
                     };
@@ -128,7 +119,7 @@
                                 location.reload();
                             },
                             function (err) {
-                                $scope.options = "Error " + err;
+                                console.log(err);
                             }
                         )
                     };
@@ -139,11 +130,8 @@
                                 $scope.filmTotal = response.rowCount;
                                 $scope.films = response.data;
                             },
-                            function (error) {
-                                $scope.films = "Error " + error;
-                            },
-                            function (notify) {
-                                console.log(notify);
+                            function (err) {
+                                console.log(err);
                             }
                         );
                     };
@@ -160,7 +148,7 @@
                                 console.log(response.data);
                             },
                             function (err) {
-                                console.log("error saving note: " + err);
+                                console.log(err);
                             }
                         );
                     };

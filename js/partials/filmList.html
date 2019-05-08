@@ -1,4 +1,4 @@
-
+<!--side film detail pane-->
 <aside>
     <div data-ng-include="'js/partials/fullFilmPane.html'"
          data-ng-show="filmDetailsVisible"
@@ -6,11 +6,10 @@
     </div>
 </aside>
 
-<aside>
-    <div data-ng-include="'js/partials/logIn.php'"
-          id="login-form">
-    </div>
-</aside>
+<!--Log in section in top right corner-->
+<section>
+    <div data-ng-include="'js/partials/logIn.php'" id="login-form"></div>
+</section>
 
 <section>
     <form id="search-and-filter">
@@ -25,7 +24,7 @@
             Select Category:
             <select data-ng-model="selectedCat"
                     data-ng-change="filterFilmsByCat(selectedCat)">
-                <option value="0" selected>List All</option>
+                <option value="0" selected>List All</option>    <!--Hard coded value to go back to listing all films-->
                 <option data-ng-repeat="option in options"
                         value="{{option.category_id}}">
                     {{option.name}}
@@ -59,7 +58,7 @@
         <span>{{film.title}}</span>
         <span>{{film.description}}</span>
         <span>{{film.release_year}}</span>
-        <span>{{film.category}}</span>
+        <span>{{film.catName}}</span>
         <span>{{film.rating}}</span>
         <span>{{film.last_update}}</span>
     </div>

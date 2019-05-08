@@ -179,6 +179,7 @@
                             subject: "note",
                             data: angular.toJson(note)
                         };
+
                         console.log(data);
                         
                         $http.post(urlBase, data).

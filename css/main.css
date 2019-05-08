@@ -23,7 +23,7 @@
 
 #login-form {
     width: 20%;
-    height: 30%;
+    height: auto;
     position: absolute;
     top: 0;
     right: 0;
@@ -52,7 +52,7 @@
     z-index: 1;
 }
 
-p, label, span {
+p, label, span, textarea, noscript {
     font-family: arial, sans-serif, vendona;
 }
 

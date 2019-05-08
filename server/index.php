@@ -1,21 +1,18 @@
 <?php
 require_once ("classes/RecordSet.class.php");
 require_once ("classes/session.class.php");
-require_once ("classes/User.class.php");
+//require_once ("classes/User.class.php");
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 $subject = isset($_REQUEST['subject']) ? $_REQUEST['subject'] : null;
 $term = isset($_REQUEST['term']) ? $_REQUEST['term'] : null;
 $catID = isset($_REQUEST['cat']) ? $_REQUEST['cat'] : null;
 $filmID = isset($_REQUEST['film_id']) ? $_REQUEST['film_id'] : null;
-$actorID = isset($_REQUEST['act_id']) ? $_REQUEST['act_id'] : null;
 
 if(empty($action))
 {
-    if((($_SERVER["REQUEST_METHOD"] == "POST") ||
-            ($_SERVER["REQUEST_METHOD"] == "PUT") ||
-            ($_SERVER["REQUEST_METHOD"] == "DELETE")) &&
-        (strpos($_SERVER["CONTENT_TYPE"], "application/json") !== false))
+    if((($_SERVER["REQUEST_METHOD"] == "POST") || ($_SERVER["REQUEST_METHOD"] == "PUT") ||
+        ($_SERVER["REQUEST_METHOD"] == "DELETE")) && (strpos($_SERVER["CONTENT_TYPE"], "application/json") !== false))
     {
         $input = json_decode(file_get_contents("php://input"), true);
         $action = isset($input['action']) ? $input['action'] : null;
@@ -25,7 +22,6 @@ if(empty($action))
 }
 
 $session = Session::getInstance();
-$dbConnection = AppRegistry::getDBConnection();
 $route = $action . ucfirst($subject);
 
 header("Content-Type: application/json");
@@ -36,10 +32,10 @@ switch ($route)
         if(empty($filmID) && empty($term) && empty($catID))
         {
             //list every film
-            $sql = "SELECT DISTINCT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
-                           nfc_film.rating, nfc_film.last_update, nfc_category.name, nfc_film.rental_duration,
-                           nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features, 
-                           nfc_language.name
+            $sql = "SELECT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
+                           nfc_film.rating, nfc_film.last_update, nfc_category.name AS catName, nfc_film.rental_duration,
+                           nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features,
+                           nfc_language.name AS filmLang
                     FROM nfc_film
                     INNER JOIN nfc_film_category
                     ON nfc_film.film_id = nfc_film_category.film_id
@@ -55,10 +51,10 @@ switch ($route)
         elseif(empty($filmID) && !empty($term) && empty($catID))
         {
             //get films if similar to a search term
-            $sql = "SELECT DISTINCT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
-                           nfc_film.rating, nfc_film.last_update, nfc_category.name, nfc_film.rental_duration,
-                           nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features, 
-                           nfc_language.name
+            $sql = "SELECT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
+                           nfc_film.rating, nfc_film.last_update, nfc_category.name AS catName, nfc_film.rental_duration,
+                           nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features,
+                           nfc_language.name AS filmLang
                     FROM nfc_film
                     INNER JOIN nfc_film_category
                     ON nfc_film.film_id = nfc_film_category.film_id
@@ -77,10 +73,10 @@ switch ($route)
             if ($catID != 0)     //List all films catID will either be 0 or null
             {
                 //list all films with a cat
-                $filmSQL = "SELECT DISTINCT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
-                               nfc_film.rating, nfc_film.last_update, nfc_category.name, nfc_film.rental_duration,
-                               nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features, 
-                               nfc_language.name
+                $filmSQL = "SELECT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
+                           nfc_film.rating, nfc_film.last_update, nfc_category.name AS catName, nfc_film.rental_duration,
+                           nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features,
+                           nfc_language.name AS filmLang
                             FROM nfc_film
                             INNER JOIN nfc_film_category
                             ON nfc_film.film_id = nfc_film_category.film_id
@@ -97,10 +93,10 @@ switch ($route)
             else
             {
                 //list all films again
-                $sql = "SELECT DISTINCT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
-                               nfc_film.rating, nfc_film.last_update, nfc_category.name, nfc_film.rental_duration,
-                               nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features, 
-                               nfc_language.name
+                $sql = "SELECT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
+                           nfc_film.rating, nfc_film.last_update, nfc_category.name AS catName, nfc_film.rental_duration,
+                           nfc_film.rental_rate, nfc_film.length, nfc_film.replacement_cost, nfc_film.special_features,
+                           nfc_language.name AS filmLang
                         FROM nfc_film
                         INNER JOIN nfc_film_category
                         ON nfc_film.film_id = nfc_film_category.film_id
@@ -122,18 +118,16 @@ switch ($route)
         $session->endProperty("email");
         $session->endProperty("username");
 
-        if(!empty($data))
-        {
-            $userCredentials = $data;
-
-            $userEmail = $userCredentials["email"];
-            $userPassword = $userCredentials["password"];
+        if(!empty($data)) {
+            $userEmail = $data["email"];
+            $userPassword = $data["password"];
 
             //user could enter email but not password, don't proceed in code if one of them are empty
-            if(!empty($userEmail) || (!empty($userPassword)))
-            {
+            if (!empty($userEmail) || (!empty($userPassword))) {
                 $userEmail = trim($userEmail);
                 $userPassword = trim($userPassword);
+
+                //server validation needed such as removing tags
 
                 $sql = "SELECT email, username, password
                         FROM nfc_user
@@ -142,38 +136,24 @@ switch ($route)
                 $resultSet = new RecordSet();
                 $resultSet = $resultSet->getRecordSet($sql, "", array(":email" => $userEmail));
 
-                if($resultSet !== false)
-                {
+                if ($resultSet !== false) {
                     $user = $resultSet->fetchObject();
 
-                    if(!empty($user))
-                    {
-                        if (password_verify($userPassword, $user->password))
-                        {
+                    if (!empty($user)) {
+                        if (password_verify($userPassword, $user->password)) {
                             $session->setProperty("email", $user->email);
                             $session->setProperty("username", $user->username);
-                            echo '{"results": "success"}';
+                            echo '{"results" : "success"}';
+                            break;
                         }
-                        else
-                        {
-                            header("Content-Type: application/json", true, 401);
-                            echo '{"results": "Login credentials incorrect"}';
-                        }
-
-                        break;
                     }
                 }
             }
-            else
-            {
-                header("Content-Type: application/json", true, 401);
-                echo '{"results": "No Data"}';
-                break;
-            }
         }
 
-        header("Content-Type: application/json", true, 401);  // 401 means 'authorisation failed failed'
-        echo '{"results" : {"data" : "Please enter both details."}}';
+        // 401 means 'authorisation failed failed'
+        header("Content-Type: application/json", true, 401);
+        echo '{"results" : {"data" : "Complete the form"}}';
         break;
 
     case "logOutUser":
@@ -213,10 +193,6 @@ switch ($route)
             echo '{"results" : "NotLoggedIn"}';
         }
         break;
-    default:
-        echo '{"results" : [{"data": "default no action taken"}]}';
-        break;
-
     case "updateNote":
         //check the user is still signed in
         if($session->getProperty("email") && $session->getProperty("username"))
@@ -259,5 +235,12 @@ switch ($route)
 
             echo '{"results": "No data"}';
         }
+        else
+        {
+            header("Content-Type: application/json", true, 412);
+        }
+        break;
+    default:
+        echo '{"results" : [{"data": "default no action taken"}]}';
         break;
 }
