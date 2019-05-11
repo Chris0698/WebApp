@@ -16,7 +16,7 @@ class RecordSet
         $this->connection = DBConnection::getConnection();
     }
 
-    public function getRecordSet($sql, $elementName = "ResultSet", $params = null)
+    public function getRecordSet($sql, $params = null)
     {
         if(is_array($params))
         {
@@ -51,7 +51,8 @@ class XMLRecordSet extends RecordSet
     /**
      * @param $sql
      * @param string $elementName
-     * @return false|PDOStatement|string|null
+     * @param null $params
+     * @return bool|false|PDOStatement|string|null
      */
     public function getRecordSet($sql, $elementName = "element", $params = null)
     {
@@ -87,31 +88,30 @@ class XMLRecordSet extends RecordSet
  */
 class JSONRecordSet extends RecordSet
 {
-    public function getRecordSet($sql, $elementName = "ResultSet", $params = null)
+    /**
+     * @param $sql
+     * @param null $params
+     * @return array|bool|false|PDOStatement|null
+     */
+    public function getRecordSet($sql, $params = null)
     {
-        try
-        {
-            $stmt = parent::getRecordSet($sql, $elementName, $params);
-            $recordSet = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $numberOfResults = count($recordSet);
+        $stmt = parent::getRecordSet($sql, $params);
+        $recordSet = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $numberOfRecords = count($recordSet);
 
-            return json_encode
-            (
-                array
-                (
-                    //"$elementName" => array
-                    //(
-                    "rowCount" => $numberOfResults,
-                    "results" => $recordSet
-                    //)
-                ),
-                JSON_NUMERIC_CHECK, JSON_PRETTY_PRINT
-            );
-        }
-        catch (Exception $exception)
+        if($numberOfRecords == 0)
         {
-            return $exception->getMessage();
-            //return json_decode('"Error" : "'.$exception->getMessage().'""');
+            $results = [];
         }
+        else
+        {
+            $results = $recordSet;
+        }
+
+        return array
+        (
+            "rowCount" => $numberOfRecords,
+            "results" => $results
+        );
     }
 }

@@ -7,10 +7,12 @@
                 "$scope",
                 "dataService",
                 function ($scope, dataService) {
+                    $scope.note = {};
+
                     var getFilms = function () {
                         dataService.getFilms().then(
                             function (response) {
-                                $scope.films = response.data;
+                                $scope.films = response.results;
                                 $scope.filmTotal = response.rowCount;
                             },
                             function (err) {
@@ -48,6 +50,8 @@
                         $scope.selectedFilm = film;
                         $scope.note = {};
 
+
+                        //positioning of the note editor
                         var element = $event.currentTarget;
                         var padding = 120;
                         var yPos = (element.offsetTop + element.clientTop + padding) - (element.scrollTop + element.clientTop);
@@ -66,11 +70,17 @@
 
                         dataService.getNote(film.film_id).then(
                             function (response) {
-                                console.log(response.data);
-                                $scope.note.film_id = film.film_id;
-                                console.log($scope.note.film_id);
-                                if(response.data !== "NotLoggedIn") {
-                                    $scope.note = response.data;
+                                if(response.status === 200) {
+                                    //user logged in and data is good
+                                    $scope.note.film_id = film.film_id;
+                                    if(response.rowCount === 1) {
+                                        //there is a record, so bind the data
+                                        $scope.note = response.data[0];
+                                    }
+
+                                    $scope.filmNoteVisible = true;
+                                } else if(response.status === 500) {
+                                    $scope.note.comment = response.error;
                                     $scope.filmNoteVisible = true;
                                 }
                             },
@@ -86,14 +96,6 @@
                     };
 
 
-                    $scope.showUserPane = function() {
-                        $scope.logInPane = true;
-                    };
-
-                    $scope.closeLogIn = function() {
-                        $scope.logInPane = false;
-                    };
-
                     $scope.logIn = function(credentials) {
                         dataService.logIn(credentials).then(
                             function (response) {
@@ -103,11 +105,11 @@
                                     location.reload();
                                 }
 
-                                $scope.logInMessage = response.results.data;
+                                $scope.logInMessage = response.data;
                             },
                             function (err) {
                                 console.log(err);
-                                $scope.logInMessage = err.results.data;
+                                $scope.logInMessage = err.data;
                             }
                         );
                     };
@@ -139,6 +141,7 @@
                     //for notes section
                     $scope.closeNoteEditor = function() {
                         $scope.filmNoteVisible = false;
+                        $scope.note = {};
                     };
 
                     $scope.updateNote = function () {
@@ -146,6 +149,9 @@
                         dataService.updateNote($scope.note).then(
                             function (response) {
                                 console.log(response.data);
+                                if(response.data === "success") {
+                                    alert("Successfully updated note.")
+                                }
                             },
                             function (err) {
                                 console.log(err);

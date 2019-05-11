@@ -52,7 +52,7 @@
     z-index: 1;
 }
 
-p, label, span, textarea, noscript {
+p, label, span, textarea, noscript, fieldset {
     font-family: arial, sans-serif, vendona;
 }
 
@@ -110,4 +110,13 @@ h1, h2, h3 {
 
 #noteButtons {
     padding-top: 12px;
+    width: 30%;
+}
+
+#noteInfo {
+    width: 70%;
+}
+
+#noteInfo > p {
+    font-size: 14px;
 }

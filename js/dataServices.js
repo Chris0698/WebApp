@@ -20,8 +20,8 @@
                         $http.get(urlBase, {params : data, cache : true}).
                             success(function (response) {
                                 defer.resolve({
-                                    data : response.results,
-                                    rowCount : response.rowCount,
+                                    results : response.data.results,
+                                    rowCount : response.data.rowCount
                                 });
                             }).error(function (err) {
                                 defer.reject(err);
@@ -41,7 +41,7 @@
                         $http.get(urlBase, {params : data, cache : true}).
                             success(function (response) {
                                 defer.resolve({
-                                   data : response.results
+                                   data : response.data.results
                                 });
                             }).error(function (err) {
                                 defer.reject(err)
@@ -60,7 +60,7 @@
                         $http.get(urlBase, {params : data, cache : true}).
                         success(function (response) {
                             defer.resolve({
-                                data : response.results
+                                data : response.data.results
                             })
                         }).error(function (error) {
                             defer.reject(error)
@@ -80,8 +80,8 @@
                         $http.get(urlBase, {params : data, cache : true}).
                         success(function (response) {
                             defer.resolve({
-                                data : response.results,
-                                rowCount : response.rowCount
+                                data : response.data.results,
+                                rowCount : response.data.rowCount
                             })
                         }).error(function (error) {
                             defer.reject(error)
@@ -118,11 +118,11 @@
                         };
 
                         $http.post(urlBase, data).
-                        success(function (response) {
-                            defer.resolve(response)
-                        }).error(function (error) {
-                            defer.reject(error)
-                        });
+                            success(function (response) {
+                                defer.resolve(response)
+                            }).error(function (error) {
+                                defer.reject(error)
+                            });
 
                         return defer.promise;
                     };
@@ -139,8 +139,8 @@
                         $http.get(urlBase, {params : data, cache : true}).
                         success(function (response) {
                             defer.resolve({
-                                data : response.results,
-                                rowCount : response.rowCount
+                                data : response.data.results,
+                                rowCount : response.data.rowCount
                             });
                         }).error(function (error) {
                             defer.reject(error)
@@ -161,7 +161,10 @@
                         $http.get(urlBase, {params : data, cache : true}).
                         success(function (response) {
                             defer.resolve({
-                                data : response.results
+                                status : response.status,
+                                rowCount : response.data.rowCount,
+                                data : response.data.results,
+                                error : response.error
                             });
                         }).error(function (error) {
                             defer.reject(error)
@@ -171,16 +174,12 @@
                     };
 
                     this.updateNote = function (note) {
-                        console.log(note);
-
                         var defer = $q.defer();
                         var data = {
                             action: "update",
                             subject: "note",
                             data: angular.toJson(note)
                         };
-
-                        console.log(data);
                         
                         $http.post(urlBase, data).
                             success(function (response) {

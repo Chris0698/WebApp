@@ -3,7 +3,7 @@
     <form method="post">
         <fieldset>
             <legend>Note</legend>
-            <input type="text" data-ng-model="note.film_id" readonly hidden />
+            <input type="text" data-ng-model="note.film_id" readonly hidden/>
             <label>Note:
                 <textarea id="note-textarea" data-ng-model="note.comment"></textarea>
             </label>
@@ -13,7 +13,7 @@
                     <button data-ng-click="updateNote()">Save</button>
                     <button data-ng-click="closeNoteEditor()">Close</button>
                 </div>
-                <div>
+                <div id="noteInfo">
                     <p>Last edit by: {{note.user}} at {{note.lastupdated}}.</p>
                 </div>
             </div>
