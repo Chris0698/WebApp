@@ -10,6 +10,7 @@
                     //url to index.php where the data will come from
                     var urlBase = "/wai-assignment/server/index.php";
 
+                    //Calls listFilms in index.php to get films
                     this.getFilms = function () {
                         var defer = $q.defer();
                         var data = {
@@ -20,6 +21,7 @@
                         $http.get(urlBase, {params : data, cache : true}).
                             success(function (response) {
                                 defer.resolve({
+                                    //the results is inside an array called data
                                     results : response.data.results,
                                     rowCount : response.data.rowCount
                                 });
@@ -30,6 +32,7 @@
                         return defer.promise;
                     };
 
+                    //get all actors for a specific film from server code
                     this.getActors = function (filmID) {
                         var defer = $q.defer();
                         var data = {
@@ -41,15 +44,17 @@
                         $http.get(urlBase, {params : data, cache : true}).
                             success(function (response) {
                                 defer.resolve({
+                                    //the results is inside an array called data
                                    data : response.data.results
                                 });
                             }).error(function (err) {
-                                defer.reject(err)
+                                defer.reject(err);
                             });
 
                         return defer.promise;
                     };
 
+                    //Gets the select categories for filtering
                     this.getSelectOptions = function () {
                         var defer = $q.defer();
                         var data = {
@@ -58,38 +63,43 @@
                         };
 
                         $http.get(urlBase, {params : data, cache : true}).
-                        success(function (response) {
-                            defer.resolve({
-                                data : response.data.results
-                            })
-                        }).error(function (error) {
-                            defer.reject(error)
-                        });
+                            success(function (response) {
+                                defer.resolve({
+                                    //the results is inside an array called data
+                                    data : response.data.results
+                                });
+                            }).error(function (err) {
+                                defer.reject(err);
+                            });
 
                         return defer.promise;
                     };
 
+                    //get the films that are like the entered term from the
+                    // server
                     this.getSearchFilms = function (term) {
                         var defer = $q.defer();
                         var data = {
                             action: "list",
                             subject : "films",
-                            term : term
+                            searchTerm : term
                         };
 
                         $http.get(urlBase, {params : data, cache : true}).
-                        success(function (response) {
-                            defer.resolve({
-                                data : response.data.results,
-                                rowCount : response.data.rowCount
-                            })
-                        }).error(function (error) {
-                            defer.reject(error)
-                        });
+                            success(function (response) {
+                                defer.resolve({
+                                    //the results is inside an array called data
+                                    data : response.data.results,
+                                    rowCount : response.data.rowCount
+                                });
+                            }).error(function (err) {
+                                defer.reject(err);
+                            });
 
                         return defer.promise;
                     };
 
+                    //Calls log in on the server
                     this.logIn = function (credentials) {
                         var defer = $q.defer();
                         var data = {
@@ -101,15 +111,18 @@
                         $http.post(urlBase, data).
                             success(function (response) {
                                 defer.resolve({
-                                    data : response.results
+                                    //the results is inside an array called data
+                                    data : response.data.results,
+                                    error : response.error
                                 });
-                            }).error(function (error) {
-                                defer.reject(error)
+                            }).error(function (err) {
+                                defer.reject(err);
                             });
 
                         return defer.promise;
                     };
 
+                    //Logging out of the app
                     this.logOut = function () {
                         var defer = $q.defer();
                         var data = {
@@ -119,15 +132,15 @@
 
                         $http.post(urlBase, data).
                             success(function (response) {
-                                defer.resolve(response)
-                            }).error(function (error) {
-                                defer.reject(error)
+                                defer.resolve(response);
+                            }).error(function (err) {
+                                defer.reject(err);
                             });
 
                         return defer.promise;
                     };
 
-
+                    //Gets the films that have the parameter category
                     this.filterFilmByCategory = function (category) {
                         var defer = $q.defer();
                         var data = {
@@ -137,19 +150,20 @@
                         };
 
                         $http.get(urlBase, {params : data, cache : true}).
-                        success(function (response) {
-                            defer.resolve({
-                                data : response.data.results,
-                                rowCount : response.data.rowCount
+                            success(function (response) {
+                                defer.resolve({
+                                    //the results is inside an array called data
+                                    data : response.data.results,
+                                    rowCount : response.data.rowCount
+                                });
+                            }).error(function (err) {
+                                defer.reject(err);
                             });
-                        }).error(function (error) {
-                            defer.reject(error)
-                        });
 
                         return defer.promise;
                     };
 
-
+                    //Get the note for the film from index
                     this.getNote = function (ID) {
                         var defer = $q.defer();
                         var data = {
@@ -159,20 +173,23 @@
                         };
 
                         $http.get(urlBase, {params : data, cache : true}).
-                        success(function (response) {
-                            defer.resolve({
-                                status : response.status,
-                                rowCount : response.data.rowCount,
-                                data : response.data.results,
-                                error : response.error
+                            success(function (response) {
+                                defer.resolve({
+                                    status : response.status,
+                                    rowCount : response.data.rowCount,
+                                    data : response.data.results,
+                                    //for debugging, a possible error and
+                                    //status was returned
+                                    error : response.error
+                                });
+                            }).error(function (err) {
+                                defer.reject(err);
                             });
-                        }).error(function (error) {
-                            defer.reject(error)
-                        });
 
                         return defer.promise;
                     };
 
+                    //Update or save the edit note
                     this.updateNote = function (note) {
                         var defer = $q.defer();
                         var data = {
@@ -193,5 +210,5 @@
                     };
                 }
             ]
-        )
+        );
 }());

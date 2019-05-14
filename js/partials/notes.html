@@ -3,6 +3,7 @@
     <form method="post">
         <fieldset>
             <legend>Note</legend>
+            <p id="save-note-error">{{noteStatus}}</p>
             <input type="text" data-ng-model="note.film_id" readonly hidden/>
             <label>Note:
                 <textarea id="note-textarea" data-ng-model="note.comment"></textarea>

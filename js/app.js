@@ -11,7 +11,7 @@
             function ($routeProvider) {
                 $routeProvider.
                     when("/films", {
-                        // templateUrl : "js/partials/film.php",
+                        templateUrl : "js/partials/film.php",
                         controller : "filmController"
                     }).
                     otherwise({

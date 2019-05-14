@@ -13,7 +13,7 @@ if($session->getProperty("username") && $session->getProperty("email"))
         <h2>Sign Out</h2>
         <p>Welcome $username</p>
         <p>Press the log out button when done to log out.</p>
-        <button data-ng-click="logOut()">Log Out</button>
+        <button data-ng-click="logOut()" id="logoutButton">Log Out</button>
     </div>
 BODY;
 }
@@ -25,7 +25,7 @@ else
     <h2>Log In</h2>
     <p>Log into the app to make changes.</p>
     <p id="logInError">{{logInMessage}}</p>
-    <form method="post">
+    <form method="post" id="log-in-form-section">
         <label>Email:
             <input type="email" name="email" data-ng-model="credentials.email"/>
         </label>

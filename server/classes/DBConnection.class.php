@@ -3,16 +3,22 @@
 require_once ("AppRegistry.class.php");
 
 /**
- * Class DBConnection
+ * Class DBConnection for database connection
  */
 class DBConnection
 {
     private static $connection = null;
 
+    /**
+     * DBConnection constructor.
+     */
     private function __construct()
     {
     }
 
+    /**
+     *
+     */
     public function __destruct()
     {
 
@@ -20,7 +26,7 @@ class DBConnection
 
     /**
      * Get a connection to the database
-     * @return null|PDO
+     * @return PDO connection for success
      */
     public static function getConnection()
     {

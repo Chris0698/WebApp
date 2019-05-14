@@ -9,16 +9,19 @@ require_once ("setEnv.php");
 class AppRegistry extends Registry
 {
     private $values = array();
-
     private static $instance = null;    //singleton
 
+    /**
+     * AppRegistry constructor.
+     */
     public function __construct()
     {
         $this->OpenSystemConfigFile();
     }
 
-
-
+    /**
+     * @return AppRegistry instance that is in use
+     */
     private static function Instance()
     {
         if(!self::$instance)
@@ -29,16 +32,29 @@ class AppRegistry extends Registry
         return self::$instance;
     }
 
+    /**
+     * Used through this class to set values
+     * @param $key, the item, to set
+     * @param $value, the value to set
+     */
     protected function Set($key, $value)
     {
         $this->values[$key] = $value;
     }
 
+    /**
+     * Get the value stored in a key or null
+     * @param $key, of the value
+     * @return value, of the key or null if not exists
+     */
     protected function Get($key)
     {
         return isset($this->values[$key]) ? $this->values[$key] : null;
     }
 
+    /**
+     * Opens the system config XML file
+     */
     private function OpenSystemConfigFile()
     {
         $filename = CONFIGLOCATION;

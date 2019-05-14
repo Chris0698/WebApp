@@ -1,0 +1,3 @@
+<config>
+    <dns>sqlite:nfc_films_v2.sqlite</dns>
+</config>

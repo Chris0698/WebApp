@@ -1,10 +1,12 @@
 <?php
+//imports
 require_once ("classes/RecordSet.class.php");
 require_once ("classes/session.class.php");
+require_once ("classes/FileWriter.class.php");
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 $subject = isset($_REQUEST['subject']) ? $_REQUEST['subject'] : null;
-$term = isset($_REQUEST['term']) ? $_REQUEST['term'] : null;
+$searchTerm = isset($_REQUEST['searchTerm']) ? $_REQUEST['searchTerm'] : null;
 $catID = isset($_REQUEST['cat']) ? $_REQUEST['cat'] : null;
 $filmID = isset($_REQUEST['film_id']) ? $_REQUEST['film_id'] : null;
 
@@ -26,9 +28,8 @@ header("Content-Type: application/json");
 switch ($route)
 {
     case "listFilms":
-        if(empty($filmID) && empty($term) && empty($catID)) {
+        if(empty($filmID) && empty($searchTerm) && empty($catID)) {
             //list every film
-
             try {
                 $sql = "SELECT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
                            nfc_film.rating, nfc_film.last_update, nfc_category.name AS catName, nfc_film.rental_duration,
@@ -48,12 +49,15 @@ switch ($route)
             }
             catch (Exception $exception) {
                 $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+
+                //Logging the exception to a file
+                FileWriter::WriteExceptionToFile("GetFilmsException.txt", $exception);
             }
 
             echo json_encode($output);
 
         }
-        else if(empty($filmID) && !empty($term) && empty($catID)) {
+        else if(empty($filmID) && !empty($searchTerm) && empty($catID)) {
             //get films if similar to a search term
             try {
                 $sql = "SELECT nfc_film.film_id, nfc_film.title, nfc_film.description, nfc_film.release_year,
@@ -70,16 +74,17 @@ switch ($route)
                     WHERE title LIKE :term
                     ORDER BY title";
                 $resultSet = new JSONRecordSet();
-                $rows = $resultSet->getRecordSet($sql, array(":term" =>  "%{$term}%"));
+                $rows = $resultSet->getRecordSet($sql, array(":term" =>  "%{$searchTerm}%"));
                 $output = array("status" => 200, "error" => "", "data" => $rows);
             }
             catch (Exception $exception) {
                 $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+                FileWriter::WriteExceptionToFile("GetFilmsException.txt", $exception);
             }
 
             echo json_encode($output);
         }
-        else if(!empty($catID) && empty($filmID) && empty($term))
+        else if(!empty($catID) && empty($filmID) && empty($searchTerm))
         {
             if ($catID != 0) {     //List all films catID will either be 0 or null
                 //list all films with a cat
@@ -103,6 +108,7 @@ switch ($route)
                 }
                 catch (Exception $exception) {
                     $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+                    FileWriter::WriteExceptionToFile("GetFilmsException.txt", $exception);
                 }
 
                 echo json_encode($output);
@@ -129,6 +135,7 @@ switch ($route)
                 }
                 catch (Exception $exception) {
                     $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+                    FileWriter::WriteExceptionToFile("GetFilmsException.txt", $exception);
                 }
 
                 echo json_encode($output);
@@ -155,6 +162,7 @@ switch ($route)
             }
             catch (Exception $exception) {
                 $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+                FileWriter::WriteExceptionToFile("GetFilmsException.txt", $exception);
             }
 
             echo json_encode($output);
@@ -163,52 +171,76 @@ switch ($route)
         break;
 
     case "logInUser":
+        //end the current user session
         $session->endProperty("email");
         $session->endProperty("username");
 
-        if(!empty($data)) {
-            $userEmail = $data["email"];
-            $userPassword = $data["password"];
+        $output = null;
 
-            //user could enter email but not password, don't proceed in code if one of them are empty
-            if (!empty($userEmail) || (!empty($userPassword))) {
-                $userEmail = trim($userEmail);
-                $userPassword = trim($userPassword);
+        try {
+            //hack for testing page
+            $userEmail = filter_has_var(INPUT_POST, 'email') ? $_POST['email'] : null;
+            $userPassword = filter_has_var(INPUT_POST, 'password') ? $_POST['password'] : null;
 
-                //server validation needed such as removing tags
+            if(empty($userEmail) && empty($userPassword))
+            {
+                $userEmail = $data["email"];
+                $userPassword = $data["password"];
+            }
 
-                $sql = "SELECT email, username, password
-                        FROM nfc_user
-                        WHERE email = :email";
+//            if(!empty($data)) {
+                //i made data an array, simply because it works, could of maybe made it JSON
+//                $userEmail = $data["email"];
+//                $userPassword = $data["password"];
 
-                $resultSet = new RecordSet();
-                $resultSet = $resultSet->getRecordSet($sql, array(":email" => $userEmail));
+                //user could of completed one field
+                if(!empty($userEmail) && !empty($userPassword)) {
+                    $userEmail = trim($userEmail);
+                    $userPassword = trim($userPassword);
 
-                if ($resultSet !== false) {
-                    $user = $resultSet->fetchObject();
+                    $sql = "SELECT email, username, password
+                            FROM nfc_user
+                            WHERE email = :email";
+                    $resultSet = new RecordSet();
+                    $resultSet = $resultSet->getRecordSet($sql, array(":email" => $userEmail));
 
-                    if (!empty($user)) {
-                        if (password_verify($userPassword, $user->password)) {
-                            $session->setProperty("email", $user->email);
-                            $session->setProperty("username", $user->username);
-                            echo '{"results" : "success"}';
-                            break;
+                    if($resultSet !== false) {
+                        $user = $resultSet->fetchObject();
+                        if(!empty($user)) {
+                            if(password_verify($userPassword, $user->password)) {
+                                //user details correct
+                                $session->setProperty("email", $user->email);
+                                $session->setProperty("username", $user->username);
+                                $output = array("status" => 200, "error" => "", "data" => array("results" => "success"));
+                            }
+                            else {
+                                $output = array("status" => 401, "error" => "Incorrect Log In details", "data" => array());
+                            }
                         }
                     }
                 }
+//            }
+            else {
+                $output = array("status" => 401, "error" => "Please Complete the Form", "data" => array());
             }
         }
+        catch (Exception $exception) {
+            $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+            FileWriter::WriteExceptionToFile("LogInUserException.txt", $exception);
+        }
 
-        // 401 means 'authorisation failed failed'
-        header("Content-Type: application/json", true, 401);
-        echo '{"results" : {"data" : "Complete the form"}}';
+        echo json_encode($output);
         break;
 
     case "logOutUser":
+        //log the user out by ending the property
         $session->endProperty("email");
         $session->endProperty("username");
+        $output = array("status" => 200, "error" => "", "data" => array("results" => "Successfully logged out"));
+        echo json_encode($output);
         break;
     case "listCategories":
+        //get the select categories
         $data = null;
 
         try {
@@ -220,11 +252,13 @@ switch ($route)
         }
         catch (Exception $exception) {
             $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+            FileWriter::WriteExceptionToFile("GetSelectCatException.txt", $exception);
         }
 
         echo json_encode($output);
         break;
     case "listActors" :
+        //Get the actors for a film
         try {
             $sql = "SELECT DISTINCT nfc_actor.first_name, nfc_actor.last_name
                     FROM nfc_actor 
@@ -237,11 +271,13 @@ switch ($route)
         }
         catch (Exception $exception) {
             $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+            FileWriter::WriteExceptionToFile("GetActorsException.txt", $exception);
         }
 
         echo json_encode($output);
         break;
     case "listNotes":
+        //get the notes for a film if the user is logged in
         $data = null;
         if($session->getProperty("email") && $session->getProperty("username")) {
             try {
@@ -254,6 +290,7 @@ switch ($route)
             }
             catch (Exception $exception) {
                 $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+                FileWriter::WriteExceptionToFile("ListNotesException.txt", $exception);
             }
         }
         else {
@@ -265,52 +302,72 @@ switch ($route)
     case "updateNote":
         //check the user is still signed in
         if($session->getProperty("email") && $session->getProperty("username")) {
-            if(!empty($data)) {
-                $note = json_decode($data);
+            try {
+                //for testing
+                $filmID = filter_has_var(INPUT_POST, 'noteID') ? $_POST['noteID'] : null;
+                $noteComment = filter_has_var(INPUT_POST, 'note') ? $_POST['note'] : null;
 
-                $username = $session->getProperty("email");
-                $date = date('Y-m-d H:i:s');
+                //legit way
+                if(empty($filmID) && empty($noteComment)) {
+                    $note = json_decode($data);
+                    $filmID = $note->film_id;
+                    $noteComment = $note->comment;
+                }
 
-                try {
-                    //check that the note is in the database table first
+                if(!empty($filmID) && !empty($noteComment)) {
+                    $date = date('Y-m-d H:i:s');
+
+                    //trim the note from whitespace
+                    $noteComment = trim($noteComment);
+
+                    //get if the note is already in the DB
                     $sql = "SELECT film_id FROM nfc_note WHERE film_id = :filmID";
                     $resultSet = new RecordSet();
-                    $resultSet = $resultSet->getRecordSet($sql, array("filmID" => $note->film_id));
+                    $resultSet = $resultSet->getRecordSet($sql, array(":filmID" => $filmID));
                     if($resultSet !== false) {
-                        //record exists
-                        $sql = "UPDATE nfc_note SET user = :user, film_id = :filmID, comment = :comment, lastupdated = :date";
+                        $data = $resultSet->fetchObject();
+                        //if the note does not exist already in nfc_note then $data is empty.
+                        //If it does already exists then $data has data.
+                        if(!empty($data)) {
+                            //record exists
+                            $sql = "UPDATE nfc_note
+                                SET user = :user, comment = :comment, lastupdated = :date
+                                WHERE film_id = :film_id";
+                            $resultSet = new JSONRecordSet();
+                            $resultSet = $resultSet->getRecordSet($sql, array
+                                (
+                                    "user" => $session->getProperty("email"),
+                                    ":comment" => $noteComment,
+                                    ":date" => $date,
+                                    "film_id" => $note->film_id
+                                )
+                            );
+                        }
+                        else {
+                            //no record exists
+                            $sql = "INSERT INTO nfc_note VALUES (:user, :filmID, :comment, :date)";
+                            $resultSet = new JSONRecordSet();
+                            $resultSet = $resultSet->getRecordSet($sql, array
+                                (
+                                    "user" => $session->getProperty("email"),
+                                    "filmID" => $filmID,
+                                    ":comment" => $noteComment,
+                                    ":date" => $date
+                                )
+                            );
+                        }
                     }
-                    else {
-                        //record does not exist
-                        $sql = "INSERT INTO nfc_note VALUES (:user, :filmID, :comment, :date)";
-                    }
-
-                    $resultSet = new JSONRecordSet();
-                    $resultSet = $resultSet->getRecordSet($sql, array
-                        (
-                            "user" => $username,
-                            "filmID" => $note->film_id,
-                            ":comment" => $note->comment,
-                            ":date" => $date
-                        )
-                    );
 
                     $output = array("status" => 200, "error" => "", "data" => array("results" => "success"));
                 }
-                catch (Exception $exception) {
-                    $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
-                }
-
-                echo json_encode($output);
-                break;
+            }
+            catch (Exception $exception) {
+                $output = array("status" => 500, "error" => $exception->getMessage(), "data" => array());
+                FileWriter::WriteExceptionToFile("UpdateNoteException.txt", $exception);
             }
 
-            $output = array("status" => 500, "error" => "No data", "data" => array());
+            echo json_encode($output);
         }
-        else {
-            $output = array("status" => 500, "error" => "Not Logged In", "data" => array());
-        }
-        echo json_encode($output);
         break;
     default:
         $output = array("status" => 500, "error" => "No action taken", "data" => array("results" => "Default no action taken"));

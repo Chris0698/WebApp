@@ -21,6 +21,10 @@
     color: red !important;
 }
 
+#save-note-error {
+    color: red;
+}
+
 #login-form {
     width: 20%;
     height: auto;
@@ -30,6 +34,10 @@
     background: white;
     border-left: 1px solid black;
     border-bottom: 1px solid black;
+}
+
+#logoutButton {
+    margin-bottom: 4px;
 }
 
 #login-form-inner {
@@ -87,8 +95,7 @@ h1, h2, h3 {
 #note-editor {
     border: 1px solid black;
     position: absolute;
-    width: 50%;
-    height: 210px;
+    width: 35%;
     background: white;
     box-shadow: 1px 1px black;
 }
@@ -103,9 +110,13 @@ h1, h2, h3 {
 }
 
 #note-textarea {
-    width: 80%;
+    width: 90%;
     height: 50px;
     resize: none;
+}
+
+#log-in-form-section > label > input {
+    display: block;
 }
 
 #noteButtons {
@@ -118,5 +129,10 @@ h1, h2, h3 {
 }
 
 #noteInfo > p {
-    font-size: 14px;
+    font-size: 12px;
+}
+
+#close-film-pane-button {
+    margin-bottom: 4px;
+    margin-left: 4px;
 }
