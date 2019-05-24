@@ -1,2 +1,0 @@
-Tue May 14 1:15:53 CEST 2019SQLSTATE[HY000]: General error: 1 no such table: nfc_film
-Tue May 14 1:18:10 CEST 2019SQLSTATE[HY000]: General error: 1 no such table: nfc_film

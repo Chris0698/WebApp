@@ -92,6 +92,10 @@ h1, h2, h3 {
     color: red;
 }
 
+#login-email, #login-password {
+    width: 80%;
+}
+
 #note-editor {
     border: 1px solid black;
     position: absolute;
@@ -117,6 +121,10 @@ h1, h2, h3 {
 
 #log-in-form-section > label > input {
     display: block;
+}
+
+#log-in-form-section > div {
+    padding-left: 6px;
 }
 
 #noteButtons {

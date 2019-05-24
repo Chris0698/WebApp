@@ -26,17 +26,19 @@ else
     <p>Log into the app to make changes.</p>
     <p id="logInError">{{logInMessage}}</p>
     <form method="post" id="log-in-form-section">
-        <label>Email:
-            <input type="email" name="email" data-ng-model="credentials.email"/>
-        </label>
-
-        <label>Password:
-            <input type="password" name="password" data-ng-model="credentials.password"/>
-        </label>
-        
-        <div id="login-buttons">
-            <button data-ng-click="logIn(credentials)">Log In</button>
-            <!--<button data-ng-click="closeLogIn()">Close</button>-->
+        <div>
+            <label>Email:
+                <input type="email" name="email" data-ng-model="credentials.email" id="login-email"/>
+            </label>
+    
+            <label>Password:
+                <input type="password" name="password" data-ng-model="credentials.password" id="login-password"/>
+            </label>
+            
+            <div id="login-buttons">
+                <button data-ng-click="logIn(credentials)">Log In</button>
+                <!--<button data-ng-click="closeLogIn()">Close</button>-->
+            </div>
         </div>
     </form>
 </div>

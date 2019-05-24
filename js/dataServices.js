@@ -172,7 +172,10 @@
                             film_id : ID
                         };
 
-                        $http.get(urlBase, {params : data, cache : true}).
+                        //set cache to false because for some reason if a note
+                        //updated, then the editor is closed, then is film is
+                        //reselected the last note would be shown
+                        $http.get(urlBase, {params : data, cache : false}).
                             success(function (response) {
                                 defer.resolve({
                                     status : response.status,

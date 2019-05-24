@@ -61,7 +61,7 @@
                         var padding = 120;
                         var yPos = (element.offsetTop + element.clientTop +
                             padding) - (element.scrollTop + element.clientTop);
-                        var noteEditor = window.document.getElementById("note-editor");
+                        var noteEditor = document.getElementById("note-editor");
                         noteEditor.style.top = yPos + "px";
 
                         //Get actors for the selected film
@@ -78,13 +78,13 @@
                         dataService.getNote(film.film_id).then(
                             function (response) {
                                 console.log(response);
+                                $scope.noteStatus = "";
                                 if(response.status === 200) {
                                     //user logged in and data is good
                                     $scope.note.film_id = film.film_id;
                                     if(response.rowCount === 1) {
                                         //there is a record, so bind the data
                                         $scope.note = response.data[0];
-                                        $scope.filmNoteVisible = true;
                                     }
 
                                     $scope.filmNoteVisible = true;
